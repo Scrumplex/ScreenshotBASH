@@ -1,0 +1,29 @@
+#!/bin/bash
+set -e
+
+DIR=$(dirname "$0")
+
+# Exit if already screenshoting
+pgrep spectacle && exit 0
+
+. $DIR/upload.conf
+
+if [ -x "$(command -v spectacle)" ]; then
+    spectacle -r -b -n -o $TARGET_FILENAME
+elif [ -x "$(command -v gnome-screenshot)" ]; then
+    gnome-screenshot -a -f $TARGET_FILENAME
+else
+    echo "Install either GNOME-Screenshot or KDE-Spectacle"
+    exit 1
+fi
+
+
+RESULT=$(curl -q -X POST -H "Content-Type: multipart/form-data" -F "upload=@$TARGET_FILENAME" -F "password=$PASSWORD" $TARGET_HOST)
+
+xdg-open $RESULT
+
+echo $RESULT | xsel -bsp
+
+play $DIR/completed.wav
+
+echo $RESULT
