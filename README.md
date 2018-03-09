@@ -9,8 +9,8 @@ It relies on multiple CLIs available for most UNIX-like systems and some even fo
  - Install dependencies (Ubuntu: `apt install curl sox`).
  - Install compatible screenshot tool ([KDE Spectacle](https://www.kde.org/applications/graphics/spectacle/) or [GNOME Screenshot](https://help.gnome.org/users/gnome-help/stable/screen-shot-record.html.en)).
  - Download a release of this repository.
- - Customize the upload.conf to match your endpoint.
- - Configure your DE to run the script with a hotkey.
+ - Customize the `config` file to match your endpoint.
+ - Configure your DE to run the script (`screenshotBASH`) with a hotkey.
 
 # Endpoints
  - [PHP Endpoint](https://github.com/Scrumplex/ScreenshotBASH-Endpoint-PHP) (Official)
