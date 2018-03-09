@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+if [ $# -eq 0 ]; then
+    >&2 echo "Usage: $0 [File]."
+    exit 1
+fi
+
+if [ ! -f "$@" ]; then
+    >&2 echo "Could not open file \"$@\"."
+    exit 1
+fi
+
+DIR=$(dirname "$0")
+
+source "$DIR/config"
+
+MIME_TYPE=$(xdg-mime query filetype $@)
+
+curl -sSf -X POST -H "Content-Type: multipart/form-data" -F "upload=@$@;type=$MIME_TYPE" -F "password=$PASSWORD" "$TARGET_HOST"

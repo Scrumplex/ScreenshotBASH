@@ -1,8 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This config is a bash script that will be sourced. You can use any bash command and syntax here.
 # The script provides $DIR as the parent directory of the script.
 # The script expects $TARGET_FILENAME, $TARGET_HOST and $PASSWORD
 
+# Filename and path of the screenshot. The filename will be used by the endpoint, too.
 TARGET_FILENAME="$(dirname "$0")/$(date +%s).png"
+# The url to the endpoint
 TARGET_HOST="https://example.com/upload.php"
+# The password defined in the endpoint
 PASSWORD="your_password_here"

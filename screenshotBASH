@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #    ScreenshotBASH-Endpoint-PHP
 #    Copyright (C) 2018 Sefa Eyeoglu <contact@scrumplex.net> (https://scrumplex.net)
 #
@@ -16,29 +16,47 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 set -e
 
+function dialog_error {
+    if [ -x "$(command -v kdialog)" ]; then
+        kdialog --error "$@"
+    elif [ -x "$(command -v zenity)" ]; then
+        zenity --error --text "$@"
+    else
+        >&2 echo "No GUI Dialog application available. Please install zenity or kdialog."
+        exit 1
+    fi
+}
+
 DIR=$(dirname "$0")
 
 # Exit if already running
 pgrep spectacle && exit 0
 pgrep gnome-screenshot && exit 0
 
-. $DIR/upload.conf
+source "$DIR/config"
 
 if [ -x "$(command -v spectacle)" ]; then
-    spectacle -r -b -n -o $TARGET_FILENAME
+    spectacle -r -b -n -o "$TARGET_FILENAME"
 elif [ -x "$(command -v gnome-screenshot)" ]; then
-    gnome-screenshot -a -f $TARGET_FILENAME
+    gnome-screenshot -a -f "$TARGET_FILENAME"
 else
-    echo "Install either GNOME-Screenshot or KDE-Spectacle"
+    dialog_error "No screenshot tool available! Please install KDE-Spectacle or GNOME-Screenshot."
     exit 1
 fi
 
-RESULT=$(curl -q -X POST -H "Content-Type: multipart/form-data" -F "upload=@$TARGET_FILENAME" -F "password=$PASSWORD" $TARGET_HOST)
+set +e
+RESULT=$($DIR/uploadBASH $TARGET_FILENAME 2>&1)
 
-xdg-open $RESULT
+if [ ! $? -eq 0 ]; then
+    dialog_error "Uploading failed: $RESULT"
+    exit 1
+fi
+set -e
 
-echo $RESULT | xsel -bsp
+xdg-open "$RESULT"
 
-play $DIR/completed.wav
+echo "$RESULT" | xsel -bsp
 
-echo $RESULT
+play "$DIR/completed.wav"
+
+echo "$RESULT"
